@@ -143,8 +143,8 @@
         bndc: bndc {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            wait-ms = <30>;
-            tap-ms = <100>;
+            wait-ms = <10>;
+            tap-ms = <20>;
             bindings
                 = <&macro_press &kp LCTRL &kp LSHFT &kp LALT>
                 , <&macro_tap &kp S>
@@ -155,8 +155,8 @@
         tgtp: tgtp {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            wait-ms = <30>;
-            tap-ms = <100>;
+            wait-ms = <10>;
+            tap-ms = <20>;
             bindings
                 = <&macro_press &kp LCTRL &kp LGUI>
                 , <&macro_tap &kp T>
@@ -167,8 +167,8 @@
         kana: kana {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            wait-ms = <30>;
-            tap-ms = <50>;
+            wait-ms = <10>;
+            tap-ms = <20>;
             bindings
                 = <&macro_press &kp LCTRL &kp LSHFT>
                 , <&macro_tap &kp N1>
@@ -180,8 +180,8 @@
         roma: roma {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            wait-ms = <30>;
-            tap-ms = <50>;
+            wait-ms = <10>;
+            tap-ms = <20>;
             bindings
                 = <&macro_press &kp LCTRL &kp LSHFT>
                 , <&macro_tap &kp N1>
@@ -193,8 +193,8 @@
         hngl: hngl {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            wait-ms = <30>;
-            tap-ms = <50>;
+            wait-ms = <10>;
+            tap-ms = <20>;
             bindings
                 = <&macro_press &kp LCTRL &kp LSHFT>
                 , <&macro_tap &kp N1>
