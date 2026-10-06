@@ -13,6 +13,19 @@ GitHub Actions builds the matrix in [build.yaml](build.yaml) on ZMK v0.3.0:
 | `felix_right nice_oled` | Peripheral |
 | `settings_reset` | Flash to both halves to clear pairing/settings |
 
+### Local build
+
+[build.sh](build.sh) runs [build.py](build.py) inside the `zmkfirmware/zmk-build-arm:stable` Docker image (only Docker is required). It reads the targets from [build.yaml](build.yaml) the same way CI does, and names the output files after the CI artifacts (e.g. `firmware/felix_left-nice_oled-nice_nano_v2-zmk.uf2`):
+
+```sh
+./build.sh              # all targets in build.yaml → firmware/*.uf2
+./build.sh left reset   # only targets whose name contains "left" or "reset"
+./build.sh -p left      # pristine build
+./build.sh --update     # re-run west update
+```
+
+The first run fetches ZMK/Zephyr into `.west-build/` and takes a few minutes. Editing `config/west.yml` triggers `west update` automatically.
+
 ## Keymap
 
 ![](keymap-drawer/felix.svg)
