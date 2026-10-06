@@ -15,6 +15,7 @@ GitHub Actions builds the matrix in [build.yaml](build.yaml) on ZMK v0.3.0:
 
 ## Keymap
 
+![](keymap-drawer/felix.svg)
 Source: [config/felix.keymap](config/felix.keymap). Layout JSON for keymap-drawer: [config/felix.json](config/felix.json).
 
 | Layer | Contents |
