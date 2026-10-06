@@ -1,0 +1,28 @@
+description: |
+  Turbo click. While held, repeatedly taps the wrapped binding (e.g. &mkp LCLK).
+  Double-tapping locks it so it keeps repeating until it is pressed again.
+  Port of getreuer's QMK mouse_turbo_click.
+
+compatible: "zmk,behavior-turbo-click"
+
+include: zero_param.yaml
+
+properties:
+  bindings:
+    type: phandle-array
+    required: true
+    description: The binding to tap repeatedly. Only the first entry is used.
+  period-ms:
+    type: int
+    default: 80
+    description: Time between taps. 80ms is about 12 taps per second.
+  tap-ms:
+    type: int
+    default: 20
+    description: How long each tap is held down. Must be shorter than period-ms.
+  lock-tap-ms:
+    type: int
+    default: 200
+    description: |
+      A press shorter than this counts as a tap. A second press within this time
+      after such a tap locks the turbo click.

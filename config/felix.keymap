@@ -1,0 +1,284 @@
+/*
+ * Felix keymap, ported from the Preonic QMK keymap
+ * (qmk_userspace/keyboards/preonic/keymaps/eg).
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+/* Mouse speed. QMK used MOUSEKEY_MOVE_DELTA 1 / MAX_SPEED 30 / TIME_TO_MAX 40.
+ * Must be defined before pointing.h is included. Tune on the real board. */
+#define ZMK_POINTING_DEFAULT_MOVE_VAL 1500
+#define ZMK_POINTING_DEFAULT_SCRL_VAL 10
+
+#include <behaviors.dtsi>
+#include <input/processors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/pointing.h>
+
+#define L0 0
+#define L1 1
+#define L2 2
+#define L3 3
+#define L4 4
+#define L_SLOW 5
+#define L_FAST 6
+
+&mmv {
+    time-to-max-speed-ms = <400>;
+    acceleration-exponent = <1>;
+};
+
+/* QMK MS_ACL0 / MS_ACL2: hold the key on L2 to slow down / speed up the pointer and wheel. */
+&mmv_input_listener {
+    slow {
+        layers = <L_SLOW>;
+        input-processors = <&zip_xy_scaler 1 4>;
+    };
+    fast {
+        layers = <L_FAST>;
+        input-processors = <&zip_xy_scaler 2 1>;
+    };
+};
+
+&msc_input_listener {
+    slow {
+        layers = <L_SLOW>;
+        input-processors = <&zip_scroll_scaler 1 2>;
+    };
+    fast {
+        layers = <L_FAST>;
+        input-processors = <&zip_scroll_scaler 2 1>;
+    };
+};
+
+/ {
+    behaviors {
+        /* Mouse turbo click: left click repeats while held, double tap locks.
+         * Implemented in src/behaviors/behavior_turbo_click.c. */
+        turbo: turbo {
+            compatible = "zmk,behavior-turbo-click";
+            #binding-cells = <0>;
+            bindings = <&mkp LCLK>;
+            period-ms = <80>;
+            tap-ms = <20>;
+            lock-tap-ms = <200>;
+        };
+    };
+
+    macros {
+        /* Bandicam capture: Ctrl+Shift+Alt+S, with S held for 100ms */
+        bndc: bndc {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <30>;
+            tap-ms = <100>;
+            bindings
+                = <&macro_press &kp LCTRL &kp LSHFT &kp LALT>
+                , <&macro_tap &kp S>
+                , <&macro_release &kp LALT &kp LSHFT &kp LCTRL>;
+        };
+
+        /* Toggle always on top: Ctrl+Win+T, with T held for 100ms */
+        tgtp: tgtp {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <30>;
+            tap-ms = <100>;
+            bindings
+                = <&macro_press &kp LCTRL &kp LGUI>
+                , <&macro_tap &kp T>
+                , <&macro_release &kp LGUI &kp LCTRL>;
+        };
+
+        /* IME Kana: Ctrl+Shift+1, then Lang1 */
+        kana: kana {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <30>;
+            tap-ms = <50>;
+            bindings
+                = <&macro_press &kp LCTRL &kp LSHFT>
+                , <&macro_tap &kp N1>
+                , <&macro_release &kp LSHFT &kp LCTRL>
+                , <&macro_tap &kp LANG1>;
+        };
+
+        /* IME Romaji: Ctrl+Shift+1, then Lang2 */
+        roma: roma {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <30>;
+            tap-ms = <50>;
+            bindings
+                = <&macro_press &kp LCTRL &kp LSHFT>
+                , <&macro_tap &kp N1>
+                , <&macro_release &kp LSHFT &kp LCTRL>
+                , <&macro_tap &kp LANG2>;
+        };
+
+        /* IME Hangul: Ctrl+Shift+1, Lang1, then Ctrl+Shift+2 */
+        hngl: hngl {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <30>;
+            tap-ms = <50>;
+            bindings
+                = <&macro_press &kp LCTRL &kp LSHFT>
+                , <&macro_tap &kp N1>
+                , <&macro_release &kp LSHFT &kp LCTRL>
+                , <&macro_tap &kp LANG1>
+                , <&macro_press &kp LCTRL &kp LSHFT>
+                , <&macro_tap &kp N2>
+                , <&macro_release &kp LSHFT &kp LCTRL>;
+        };
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+
+/* LAYER 0 - base
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * |   `  |   1  |   2  |   3  |   4  |   5  |             |   6  |   7  |   8  |   9  |   0  |  -   |
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * | Tab  |   Q  |   W  |   E  |   R  |   T  |             |   Y  |   U  |   I  |   O  |   P  |Enter |
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * | MO(2)|   A  |   S  |   D  |   F  |   G  |             |   H  |   J  |   K  |   L  |   ;  |   '  |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ * | Shft |   Z  |   X  |   C  |   V  |   B  | Spc  | Bksp |   N  |   M  |   ,  |   .  |   /  | Shft |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ * | Ctrl | Gui  | Alt  | Alt  | MO(3)| Spc  | Spc  | Bksp | Bksp | MO(3)| MO(4)| MO(1)| App  | Ctrl |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ */
+        layer0 {
+            display-name = "Base";
+            bindings = <
+&kp GRAVE  &kp N1     &kp N2     &kp N3     &kp N4     &kp N5                           &kp N6     &kp N7     &kp N8     &kp N9     &kp N0     &kp MINUS
+&kp TAB    &kp Q      &kp W      &kp E      &kp R      &kp T                            &kp Y      &kp U      &kp I      &kp O      &kp P      &kp ENTER
+&mo L2     &kp A      &kp S      &kp D      &kp F      &kp G                            &kp H      &kp J      &kp K      &kp L      &kp SEMI   &kp SQT
+&kp LSHFT  &kp Z      &kp X      &kp C      &kp V      &kp B      &kp SPACE  &kp BSPC   &kp N      &kp M      &kp COMMA  &kp DOT    &kp FSLH   &kp RSHFT
+&kp LCTRL  &kp LGUI   &kp LALT   &kp LALT   &mo L3     &kp SPACE  &kp SPACE  &kp BSPC   &kp BSPC   &mo L3     &mo L4     &mo L1     &kp K_APP  &kp RCTRL
+            >;
+        };
+
+/* LAYER 1 - function / navigation
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * | F12  |  F1  |  F2  |  F3  |  F4  |  F5  |             |  F6  |  F7  |  F8  |  F9  | F10  | F11  |
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * |      |      |  (   |  )   |  -   |  =   |             |      |PrtScn|ScrLk | Paus |      |      |
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * |      |      |  [   |  ]   |  \   |Enter |             |      | Ins  | Home | PgUp | KANA | HNGL |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ * |      |Ctrl+Z|Ctrl+X|Ctrl+C|Ctrl+V|      |      |      |      | Del  | End  | PgDn | ROMA |      |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ * |      |      |      |      |      |      |      |      |      |      |      |      |      |      |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ */
+        layer1 {
+            display-name = "Fn";
+            bindings = <
+&kp F12          &kp F1           &kp F2           &kp F3           &kp F4           &kp F5                                             &kp F6           &kp F7           &kp F8           &kp F9           &kp F10          &kp F11
+&trans           &trans           &kp LPAR         &kp RPAR         &kp MINUS        &kp EQUAL                                          &trans           &kp PSCRN        &kp SLCK         &kp PAUSE_BREAK  &trans           &trans
+&trans           &trans           &kp LBKT         &kp RBKT         &kp BSLH         &kp ENTER                                          &trans           &kp INS          &kp HOME         &kp PG_UP        &kana            &hngl
+&trans           &kp LC(Z)        &kp LC(X)        &kp LC(C)        &kp LC(V)        &trans           &trans           &trans           &trans           &kp DEL          &kp END          &kp PG_DN        &roma            &trans
+&trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans
+            >;
+        };
+
+/* LAYER 2 - mouse / numpad
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * |      | MS B1| MS B3| MS B2|      |      |             |      | #Lk  |   /  |   *  |  -   |  +   |
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * | Esc  |WH Lft|MS Up |WH Rgt|WH Up |      |             |      |  7   |  8   |  9   |  +   | Caps |
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * |      |MS Lft|MS Dwn|MS Rgt|WH Dwn|      |             |      |  4   |  5   |  6   |  +   |      |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ * |Enter |      |      |      |      |      |      |      |      |  1   |  2   |  3   |  =   |      |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ * |      |      | Slow | Slow |      | Fast |      |      |      |  0   |  0   |  .   | Entr |      |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ */
+        layer2 {
+            display-name = "Mouse";
+            bindings = <
+&trans           &mkp LCLK        &mkp MCLK        &mkp RCLK        &trans           &trans                                             &trans           &kp KP_NUM       &kp KP_DIVIDE    &kp KP_MULTIPLY  &kp KP_MINUS     &kp KP_PLUS
+&kp ESC          &msc SCRL_LEFT   &mmv MOVE_UP     &msc SCRL_RIGHT  &msc SCRL_UP     &trans                                             &trans           &kp KP_N7        &kp KP_N8        &kp KP_N9        &kp KP_PLUS      &kp CAPS
+&trans           &mmv MOVE_LEFT   &mmv MOVE_DOWN   &mmv MOVE_RIGHT  &msc SCRL_DOWN   &trans                                             &trans           &kp KP_N4        &kp KP_N5        &kp KP_N6        &kp KP_PLUS      &trans
+&kp ENTER        &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &kp KP_N1        &kp KP_N2        &kp KP_N3        &kp KP_EQUAL     &trans
+&trans           &trans           &mo L_SLOW       &mo L_SLOW       &trans           &mo L_FAST       &trans           &trans           &trans           &kp KP_N0        &kp KP_N0        &kp KP_DOT       &kp KP_ENTER     &trans
+            >;
+        };
+
+/* LAYER 3 - arrows / shortcuts
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * | F12  |  F1  |  F2  |  F3  |  F4  |  F5  |             |  F6  |  F7  |  F8  |  F9  | F10  | F11  |
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * |      |      |      |  Up  |      | TGTP |             |      |      |  Up  |  [   |  ]   |      |
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * |      |TURBO | Left | Down |Right |      |             |      | Left | Down |Right |      | Esc  |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ * |      |SMenu | Del  | SHRX | BNDC |      |      |      |      |      |      |      |SMenu |      |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ * |      |      |      |      |      |      |      |      |      |      |      |      |      |      |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ */
+        layer3 {
+            display-name = "Nav";
+            bindings = <
+&kp F12          &kp F1           &kp F2           &kp F3           &kp F4           &kp F5                                             &kp F6           &kp F7           &kp F8           &kp F9           &kp F10          &kp F11
+&trans           &trans           &trans           &kp UP           &trans           &tgtp                                              &trans           &trans           &kp UP           &kp LBKT         &kp RBKT         &trans
+&trans           &turbo           &kp LEFT         &kp DOWN         &kp RIGHT        &trans                                             &trans           &kp LEFT         &kp DOWN         &kp RIGHT        &trans           &kp ESC
+&trans           &kp LS(K_APP)    &kp DEL          &kp LG(LS(Q))    &bndc            &trans           &trans           &trans           &trans           &trans           &trans           &trans           &kp LS(K_APP)    &trans
+&trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans
+            >;
+        };
+
+/* LAYER 4 - media / system
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * | BT0  | BT1  | BT2  | BT3  | BT4  |      |             |      |      |      |      | Brt- | Brt+ |
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * |Dsc0  |Dsc1  |Dsc2  |Dsc3  |Dsc4  |      |             |      |      |      | Mute | Vol- | Vol+ |
+ * +------+------+------+------+------+------+             +------+------+------+------+------+------+
+ * |BTClr |      |      |      |      |      |             |      |      |      | Prev |Ply/Ps| Next |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ * |      |      |      |      |      |      |      |      |      |      |      |      |      |      |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ * |      |      |      |      |      |      |      |      |      |      |      |      |      |Boot  |
+ * +------+------+------+------+------+------+------+------+------+------+------+------+------+------+
+ */
+        layer4 {
+            display-name = "System";
+            bindings = <
+&bt BT_SEL 0     &bt BT_SEL 1     &bt BT_SEL 2     &bt BT_SEL 3     &bt BT_SEL 4     &trans                                             &trans           &trans           &trans           &none            &kp C_BRI_DN     &kp C_BRI_UP
+&bt BT_DISC 0    &bt BT_DISC 1    &bt BT_DISC 2    &bt BT_DISC 3    &bt BT_DISC 4    &trans                                             &trans           &trans           &trans           &kp C_MUTE       &kp C_VOL_DN     &kp C_VOL_UP
+&bt BT_CLR       &trans           &trans           &trans           &trans           &trans                                             &trans           &trans           &trans           &kp C_PREV       &kp C_PP         &kp C_NEXT
+&trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans
+&trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &trans           &bootloader
+            >;
+        };
+
+        /* Held via &mo L_SLOW on L2. Scales the pointer and wheel down (QMK MS_ACL0). */
+        layer_slow {
+            display-name = "Slow";
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+            >;
+        };
+
+        /* Held via &mo L_FAST on L2. Scales the pointer and wheel up (QMK MS_ACL2). */
+        layer_fast {
+            display-name = "Fast";
+            bindings = <
+&trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans                  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+            >;
+        };
+    };
+};
