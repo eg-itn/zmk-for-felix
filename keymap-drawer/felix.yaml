@@ -1,7 +1,70 @@
 layout: {zmk_keyboard: felix}
 layers:
-  Base: ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', TAB, Q, W, E, R, T, Y, U, I, O, P, ENTER, Mouse, A, S, D, F, G, H, J, K, L, ;, '''', LSHFT, Z,
-    X, C, V, B, SPACE, BSPC, N, M, ',', ., /, RSHFT, LCTRL, LGUI, LALT, LALT, Nav, SPACE, SPACE, BSPC, BSPC, Nav, System, Fn, APP, RCTRL]
+  Base:
+  - '`'
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - '0'
+  - '-'
+  - TAB
+  - Q
+  - W
+  - E
+  - R
+  - T
+  - Y
+  - U
+  - I
+  - O
+  - P
+  - ENTER
+  - {t: ESC, h: Mouse}
+  - A
+  - S
+  - D
+  - F
+  - G
+  - H
+  - J
+  - K
+  - L
+  - ;
+  - ''''
+  - LSHFT
+  - Z
+  - X
+  - C
+  - V
+  - B
+  - SPACE
+  - BSPC
+  - N
+  - M
+  - ','
+  - .
+  - /
+  - RSHFT
+  - LCTRL
+  - LGUI
+  - LALT
+  - LALT
+  - Nav
+  - SPACE
+  - SPACE
+  - BSPC
+  - BSPC
+  - Nav
+  - System
+  - Fn
+  - APP
+  - RCTRL
   Fn:
   - F12
   - F1
